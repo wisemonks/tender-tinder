@@ -1,0 +1,48 @@
+╔═══════════════════════════════════════════════════════════════════════════╗
+║  🔥 TENDER TINDER - Nauji pirkimai už <%= @date.strftime('%Y-%m-%d') %>  ║
+╚═══════════════════════════════════════════════════════════════════════════╝
+
+<% if @procurements.any? %>
+Rasta <%= @procurements.count %> <%= @procurements.count == 1 ? 'naujas pirkimas' : 'nauji pirkimai' %>
+
+<% @procurements.each_with_index do |procurement, index| %>
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+<%= index + 1 %>. <%= procurement.title %>
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+   ID: <%= procurement.external_id %>
+
+   Pirkimo vykdytojas:  <%= procurement.authority_name %>
+   <% if procurement.cpc_category.present? %>SPK kategorija:       <%= procurement.cpc_category %><% end %>
+   <% if procurement.procedure_type.present? %>Pirkimo būdas:        <%= procurement.procedure_type %><% end %>
+   <% if procurement.status.present? %>Būsena:               <%= procurement.status %><% end %>
+   <% if procurement.deadline_date %>Pasiūlymų terminas:   <%= procurement.deadline_date.strftime('%Y-%m-%d %H:%M') %><% end %>
+   <% if procurement.estimated_value %>Numatoma vertė:       <%= number_to_currency(procurement.estimated_value, unit: '€', format: '%n %u') %><% end %>
+   <% if procurement.contract_duration.present? %>Sutarties trukmė:     <%= procurement.contract_duration %><% end %>
+   <% if procurement.evaluation_criteria.present? %>Vertinimo kriterijai: <%= procurement.evaluation_criteria %><% end %>
+
+<% if procurement.description.present? %>
+   Aprašymas:
+   <%= truncate(procurement.description, length: 250).gsub("\n", "\n   ") %>
+<% end %>
+
+   → Peržiūrėti išsamiau: <%= procurement_url(procurement) %>
+
+<% end %>
+<% else %>
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+   Šiandien naujų pirkimų nerasta.
+
+   Bandykite vėliau arba patikrinkite savo filtrus.
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+<% end %>
+
+═══════════════════════════════════════════════════════════════════════════
+
+Šis pranešimas automatiškai išsiųstas iš Tender Tinder sistemos.
+Norėdami pakeisti el. pašto nustatymus, atnaujinkite ScraperSettings
+konfigūraciją.
+
+═══════════════════════════════════════════════════════════════════════════

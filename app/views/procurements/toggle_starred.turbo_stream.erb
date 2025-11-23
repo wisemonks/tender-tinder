@@ -1,0 +1,9 @@
+<%= turbo_stream.replace "procurement_star_#{@procurement.id}" do %>
+  <%= button_to toggle_starred_procurement_path(@procurement),
+    method: :post,
+    class: "text-2xl focus:outline-none" do %>
+    <span class="inline-block transform transition-all duration-300 ease-out hover:scale-125 <%= @procurement.is_starred? ? 'text-red-500 drop-shadow-lg' : 'text-gray-300 hover:text-orange-500' %>" style="<%= @procurement.is_starred? ? 'filter: drop-shadow(0 0 8px rgba(239, 68, 68, 0.6));' : '' %>">
+      <%= @procurement.is_starred? ? '★' : '☆' %>
+    </span>
+  <% end %>
+<% end %>

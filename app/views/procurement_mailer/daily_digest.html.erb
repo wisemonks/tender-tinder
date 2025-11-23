@@ -1,0 +1,263 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8">
+  <style>
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Arial, sans-serif;
+      line-height: 1.6;
+      color: #1f2937;
+      background-color: #f3f4f6;
+      margin: 0;
+      padding: 0;
+    }
+    .container {
+      max-width: 680px;
+      margin: 0 auto;
+      padding: 20px;
+    }
+    .header {
+      background: linear-gradient(135deg, #f97316 0%, #ef4444 50%, #ec4899 100%);
+      color: white;
+      padding: 30px 20px;
+      border-radius: 12px;
+      margin-bottom: 25px;
+      box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    }
+    .header h1 {
+      margin: 0;
+      font-size: 28px;
+      font-weight: 700;
+    }
+    .header .subtitle {
+      margin: 8px 0 0 0;
+      font-size: 16px;
+      opacity: 0.95;
+    }
+    .summary {
+      background: white;
+      padding: 20px;
+      border-radius: 8px;
+      margin-bottom: 20px;
+      box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+    }
+    .procurement {
+      background: white;
+      border: 1px solid #e5e7eb;
+      border-radius: 12px;
+      margin-bottom: 20px;
+      overflow: hidden;
+      box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+    }
+    .procurement-header {
+      background: linear-gradient(to right, #fff7ed, #fee2e2);
+      padding: 16px 20px;
+      border-bottom: 2px solid #ef4444;
+    }
+    .procurement-header h3 {
+      margin: 0;
+      color: #991b1b;
+      font-size: 18px;
+      font-weight: 600;
+    }
+    .procurement-id {
+      display: inline-block;
+      background: linear-gradient(to right, #f97316, #ef4444);
+      color: white;
+      padding: 4px 12px;
+      border-radius: 12px;
+      font-size: 13px;
+      font-weight: 600;
+      margin-top: 8px;
+    }
+    .procurement-body {
+      padding: 0;
+    }
+    .info-table {
+      width: 100%;
+      border-collapse: collapse;
+    }
+    .info-table td {
+      padding: 12px 20px;
+      border-bottom: 1px solid #f3f4f6;
+    }
+    .info-table tr:last-child td {
+      border-bottom: none;
+    }
+    .info-table .label {
+      font-weight: 600;
+      color: #6b7280;
+      width: 45%;
+      font-size: 14px;
+    }
+    .info-table .value {
+      color: #1f2937;
+      font-size: 14px;
+    }
+    .value-highlight {
+      color: #059669;
+      font-weight: 600;
+    }
+    .description-section {
+      background: #f9fafb;
+      padding: 16px 20px;
+      border-top: 1px solid #e5e7eb;
+    }
+    .description-section .label {
+      font-weight: 600;
+      color: #6b7280;
+      font-size: 13px;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+      margin-bottom: 8px;
+    }
+    .description-section .text {
+      color: #4b5563;
+      line-height: 1.6;
+      font-size: 14px;
+    }
+    .procurement-footer {
+      background: #f9fafb;
+      padding: 16px 20px;
+      border-top: 1px solid #e5e7eb;
+      text-align: center;
+      border-radius: 0 0 12px 12px;
+    }
+    .link {
+      display: inline-block;
+      background: linear-gradient(to right, #f97316, #ef4444);
+      color: white !important;
+      padding: 12px 24px;
+      text-decoration: none;
+      border-radius: 8px;
+      font-weight: 600;
+      font-size: 14px;
+      transition: background-color 0.2s;
+    }
+    .link:hover {
+      background: linear-gradient(to right, #ea580c, #dc2626);
+    }
+    .footer {
+      text-align: center;
+      color: #9ca3af;
+      font-size: 13px;
+      margin-top: 40px;
+      padding-top: 20px;
+      border-top: 1px solid #e5e7eb;
+      line-height: 1.8;
+    }
+    .no-results {
+      background: white;
+      padding: 40px 20px;
+      border-radius: 12px;
+      text-align: center;
+      color: #6b7280;
+      box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <div class="header">
+      <h1>🔥 Tender Tinder</h1>
+      <p class="subtitle">Nauji pirkimai už <%= @date.strftime('%Y-%m-%d') %></p>
+    </div>
+
+    <% if @procurements.any? %>
+      <div class="summary">
+        <p style="margin: 0; font-size: 16px; color: #1f2937;">
+          Rasta <strong style="color: #ef4444;"><%= @procurements.count %></strong> <%= @procurements.count == 1 ? 'naujas pirkimas' : 'nauji pirkimai' %>
+        </p>
+      </div>
+
+      <% @procurements.each do |procurement| %>
+        <div class="procurement">
+          <div class="procurement-header">
+            <h3><%= procurement.title %></h3>
+            <span class="procurement-id">ID: <%= procurement.external_id %></span>
+          </div>
+
+          <div class="procurement-body">
+            <table class="info-table">
+              <tr>
+                <td class="label">Pirkimo vykdytojas</td>
+                <td class="value"><%= procurement.authority_name %></td>
+              </tr>
+
+              <% if procurement.cpc_category.present? %>
+                <tr>
+                  <td class="label">SPK kategorija</td>
+                  <td class="value"><%= procurement.cpc_category %></td>
+                </tr>
+              <% end %>
+
+              <% if procurement.procedure_type.present? %>
+                <tr>
+                  <td class="label">Pirkimo būdas</td>
+                  <td class="value"><%= procurement.procedure_type %></td>
+                </tr>
+              <% end %>
+
+              <% if procurement.status.present? %>
+                <tr>
+                  <td class="label">Būsena</td>
+                  <td class="value"><%= procurement.status %></td>
+                </tr>
+              <% end %>
+
+              <% if procurement.deadline_date %>
+                <tr>
+                  <td class="label">Pasiūlymų terminas</td>
+                  <td class="value"><%= procurement.deadline_date.strftime('%Y-%m-%d %H:%M') %></td>
+                </tr>
+              <% end %>
+
+              <% if procurement.estimated_value %>
+                <tr>
+                  <td class="label">Numatoma vertė</td>
+                  <td class="value value-highlight"><%= number_to_currency(procurement.estimated_value, unit: '€', format: '%n %u') %></td>
+                </tr>
+              <% end %>
+
+              <% if procurement.contract_duration.present? %>
+                <tr>
+                  <td class="label">Sutarties trukmė</td>
+                  <td class="value"><%= procurement.contract_duration %></td>
+                </tr>
+              <% end %>
+
+              <% if procurement.evaluation_criteria.present? %>
+                <tr>
+                  <td class="label">Vertinimo kriterijai</td>
+                  <td class="value"><%= procurement.evaluation_criteria %></td>
+                </tr>
+              <% end %>
+            </table>
+
+            <% if procurement.description.present? %>
+              <div class="description-section">
+                <div class="label">Aprašymas</div>
+                <div class="text"><%= truncate(procurement.description, length: 250) %></div>
+              </div>
+            <% end %>
+          </div>
+
+          <div class="procurement-footer">
+            <a href="<%= procurement_url(procurement) %>" class="link">Peržiūrėti išsamiau →</a>
+          </div>
+        </div>
+      <% end %>
+    <% else %>
+      <div class="no-results">
+        <p style="margin: 0; font-size: 18px; font-weight: 600; color: #6b7280;">Šiandien naujų pirkimų nerasta</p>
+        <p style="margin: 8px 0 0 0; color: #9ca3af;">Bandykite vėliau arba patikrinkite savo filtrus</p>
+      </div>
+    <% end %>
+
+    <div class="footer">
+      <p style="margin: 0 0 8px 0;">Šis pranešimas automatiškai išsiųstas iš <strong>Tender Tinder</strong> sistemos</p>
+      <p style="margin: 0;">Norėdami pakeisti el. pašto nustatymus, atnaujinkite <code>ScraperSettings</code> konfigūraciją</p>
+    </div>
+  </div>
+</body>
+</html>

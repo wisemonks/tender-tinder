@@ -1,0 +1,13 @@
+# Read about fixtures at https://api.rubyonrails.org/classes/ActiveRecord/FixtureSet.html
+
+one:
+  procurement: one
+  title: MyString
+  url: MyString
+  file_type: MyString
+
+two:
+  procurement: two
+  title: MyString
+  url: MyString
+  file_type: MyString

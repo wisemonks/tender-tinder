@@ -1,0 +1,27 @@
+# Read about fixtures at https://api.rubyonrails.org/classes/ActiveRecord/FixtureSet.html
+
+one:
+  external_id: MyString
+  title: MyText
+  authority_name: MyString
+  description: MyText
+  status: MyString
+  publication_date: 2025-11-22 11:46:50
+  deadline_date: 2025-11-22 11:46:50
+  estimated_value: 9.99
+  url: MyString
+  raw_html: MyText
+  is_starred: false
+
+two:
+  external_id: MyString
+  title: MyText
+  authority_name: MyString
+  description: MyText
+  status: MyString
+  publication_date: 2025-11-22 11:46:50
+  deadline_date: 2025-11-22 11:46:50
+  estimated_value: 9.99
+  url: MyString
+  raw_html: MyText
+  is_starred: false
