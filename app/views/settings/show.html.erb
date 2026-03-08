@@ -11,7 +11,7 @@
             <h1 class="text-3xl font-bold text-transparent bg-clip-text bg-gradient-to-r from-orange-500 via-red-500 to-pink-500" style="font-family: 'Righteous', sans-serif;">
               Nustatymai
             </h1>
-            <p class="text-sm text-gray-500 mt-1">Scraper filtrai</p>
+            <p class="text-sm text-gray-500 mt-1">Atrankos taisyklės rezultatams ir kasdienei santraukai</p>
           </div>
         </div>
         <%= link_to root_path, class: "inline-flex items-center gap-2 px-4 py-2 bg-white text-red-600 border border-red-300 rounded-lg hover:bg-red-50 transition-colors font-medium" do %>
@@ -29,6 +29,12 @@
       </div>
     <% end %>
 
+    <% if alert %>
+      <div class="mb-6 p-4 bg-red-50 border border-red-200 text-red-800 rounded-lg">
+        <%= alert %>
+      </div>
+    <% end %>
+
     <!-- Settings Form -->
     <div class="bg-white rounded-xl shadow-lg border border-gray-200 overflow-hidden">
       <%= form_with url: settings_path, method: :patch, scope: :settings, class: "p-6 space-y-6" do |f| %>
@@ -36,58 +42,76 @@
         <!-- Status Filter -->
         <div>
           <label class="block text-sm font-medium text-gray-700 mb-2">
-            Pirkimo būsena (Status)
+            Pirkimo būsena
           </label>
           <%= f.select :status,
             options_for_select(@status_options, @settings["status"]&.value),
             {},
             class: "w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-red-500 focus:border-transparent" %>
-          <p class="mt-1 text-sm text-gray-500">Palikite tuščią, kad rastų visas būsenas</p>
+          <p class="mt-1 text-sm text-gray-500">Rodomi tik šią būseną atitinkantys pirkimai</p>
         </div>
 
         <!-- Contract Type Filter -->
         <div>
           <label class="block text-sm font-medium text-gray-700 mb-2">
-            Pirkimo objekto tipas (Contract Type)
+            Pirkimo objekto tipas
           </label>
           <%= f.select :contract_type,
             options_for_select(@contract_type_options, @settings["contract_type"]&.value),
             {},
             class: "w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-red-500 focus:border-transparent" %>
-          <p class="mt-1 text-sm text-gray-500">Filtruoti pagal paslaugas, darbus ar prekes</p>
+          <p class="mt-1 text-sm text-gray-500">Pasirinkite, jei norite matyti tik paslaugas, darbus arba prekes</p>
         </div>
 
         <!-- Procedure Filter -->
         <div>
           <label class="block text-sm font-medium text-gray-700 mb-2">
-            Pirkimo būdas (Procedure Type)
+            Pirkimo būdas
           </label>
           <%= f.select :procedure,
             options_for_select(@procedure_options, @settings["procedure"]&.value),
             {},
             class: "w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-red-500 focus:border-transparent" %>
-          <p class="mt-1 text-sm text-gray-500">Filtruoti pagal pirkimo procedūrą</p>
+          <p class="mt-1 text-sm text-gray-500">Naudinga, jei sekate tik konkrečias pirkimo procedūras</p>
         </div>
 
         <!-- CPC Category Filter -->
         <div>
           <label class="block text-sm font-medium text-gray-700 mb-2">
-            SPK kategorija (CPC Category)
+            SPK kategorija
           </label>
           <%= f.select :cpc_category,
             options_for_select(@cpc_category_options, @settings["cpc_category"]&.value),
             {},
             class: "w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-red-500 focus:border-transparent" %>
-          <p class="mt-1 text-sm text-gray-500">Filtruoti pagal paslaugų kategoriją</p>
+          <p class="mt-1 text-sm text-gray-500">Kai SPK žinoma, rodysime tik atitinkančias kategorijas</p>
+        </div>
+
+        <!-- Keywords -->
+        <div class="border-t pt-6">
+          <h3 class="text-lg font-medium text-gray-900 mb-4">Raktažodžiai</h3>
+          <div class="rounded-2xl border border-orange-100 bg-gradient-to-r from-orange-50 to-red-50 p-4">
+            <label class="block text-sm font-medium text-gray-700 mb-2">
+              Ko ieškoti pirkimų tekste
+            </label>
+            <%= f.text_area :keywords,
+              value: @settings["keywords"]&.value,
+              rows: 5,
+              placeholder: "saulės elektrinė
+IT priežiūra
+kibernetinis saugumas",
+              class: "w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-red-500 focus:border-transparent" %>
+            <p class="mt-2 text-sm text-gray-600 leading-6">Įrašykite po vieną raktažodį kiekvienoje eilutėje arba atskirkite kableliais. Pirkimas bus atrinktas, jei bent vienas raktažodis bus rastas pavadinime, aprašyme, vykdytojo pavadinime, procedūroje, SPK, BVPŽ ar kituose išsaugotuose laukuose.</p>
+          </div>
         </div>
 
         <!-- Publication Date Range -->
         <div class="border-t pt-6">
-          <h3 class="text-lg font-medium text-gray-900 mb-4">Paskelbimo data (Publication Date)</h3>
+          <h3 class="text-lg font-medium text-gray-900 mb-4">Paskelbimo data</h3>
           <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
             <div>
               <label class="block text-sm font-medium text-gray-700 mb-2">
-                Nuo (From)
+                Nuo
               </label>
               <%= f.date_field :publication_from_date,
                 value: @settings["publication_from_date"]&.value,
@@ -95,7 +119,7 @@
             </div>
             <div>
               <label class="block text-sm font-medium text-gray-700 mb-2">
-                Iki (To)
+                Iki
               </label>
               <%= f.date_field :publication_to_date,
                 value: @settings["publication_to_date"]&.value,
@@ -106,11 +130,11 @@
 
         <!-- Submission Deadline Range -->
         <div class="border-t pt-6">
-          <h3 class="text-lg font-medium text-gray-900 mb-4">Pasiūlymų terminas (Submission Deadline)</h3>
+          <h3 class="text-lg font-medium text-gray-900 mb-4">Pasiūlymų terminas</h3>
           <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
             <div>
               <label class="block text-sm font-medium text-gray-700 mb-2">
-                Nuo (From)
+                Nuo
               </label>
               <%= f.date_field :submission_from_date,
                 value: @settings["submission_from_date"]&.value,
@@ -118,7 +142,7 @@
             </div>
             <div>
               <label class="block text-sm font-medium text-gray-700 mb-2">
-                Iki (To)
+                Iki
               </label>
               <%= f.date_field :submission_to_date,
                 value: @settings["submission_to_date"]&.value,
@@ -129,11 +153,11 @@
 
         <!-- Estimated Value Range -->
         <div class="border-t pt-6">
-          <h3 class="text-lg font-medium text-gray-900 mb-4">Numatoma vertė (Estimated Value EUR)</h3>
+          <h3 class="text-lg font-medium text-gray-900 mb-4">Numatoma vertė (EUR)</h3>
           <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
             <div>
               <label class="block text-sm font-medium text-gray-700 mb-2">
-                Minimumas (Min)
+                Minimumas
               </label>
               <%= f.number_field :estimated_value_min,
                 value: @settings["estimated_value_min"]&.value,
@@ -143,7 +167,7 @@
             </div>
             <div>
               <label class="block text-sm font-medium text-gray-700 mb-2">
-                Maksimumas (Max)
+                Maksimumas
               </label>
               <%= f.number_field :estimated_value_max,
                 value: @settings["estimated_value_max"]&.value,
@@ -162,7 +186,7 @@
                 <path d="M2.003 5.884L10 9.882l7.997-3.998A2 2 0 0016 4H4a2 2 0 00-1.997 1.884z"/>
                 <path d="M18 8.118l-8 4-8-4V14a2 2 0 002 2h12a2 2 0 002-2V8.118z"/>
               </svg>
-              Naujienlaiškio gavėjai
+              Kasdienės el. pašto santraukos gavėjai
             </span>
           </h3>
           <div>
@@ -174,7 +198,7 @@
               rows: 3,
               placeholder: "example1@email.com, example2@email.com, example3@email.com",
               class: "w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-red-500 focus:border-transparent font-mono text-sm" %>
-            <p class="mt-2 text-sm text-gray-500">Įveskite vieną ar kelis el. pašto adresus, atskirtus kableliais. Kiekvieną dieną visi gavėjai gaus naujienlaiškį su naujais pirkimais.</p>
+            <p class="mt-2 text-sm text-gray-500">Įveskite vieną ar kelis el. pašto adresus, atskirtus kableliais. Gavėjai kiekvieną dieną gaus tik jūsų taisykles atitinkančių naujų pirkimų santrauką.</p>
           </div>
         </div>
 
@@ -194,9 +218,10 @@
         Kaip tai veikia
       </h3>
       <ul class="text-sm text-red-900 space-y-2 list-disc list-inside">
-        <li>Šie nustatymai kontroliuoja, kokie pirkimai yra renkami iš viesiejipirkimai.lt</li>
-        <li>Palikite filtrus tuščius, kad rastų visus prieinamus pirkimus</li>
-        <li>Nustatymai pritaikomi automatiškai kitame rinkimo cikle</li>
+        <li>Sistema surenka visus prieinamus pirkimus iš <code class="bg-red-100 px-2 py-1 rounded font-mono text-xs">viesiejipirkimai.lt</code>, o šie nustatymai sprendžia, ką matysite jūs</li>
+        <li>Palikite filtrus tuščius, jei norite matyti visą surinktą srautą</li>
+        <li>Raktažodžiai padeda atrinkti tik jūsų sričiai aktualius pirkimus ir el. laiškus</li>
+        <li>Išsaugoti pakeitimai pradedami taikyti iš karto jau surinktiems duomenims ir kitam nuskaitymo ciklui</li>
         <li>Galite paleisti rankiniu būdu su: <code class="bg-red-100 px-2 py-1 rounded font-mono text-xs">rails runner "ScrapeListJob.new.perform"</code></li>
       </ul>
     </div>

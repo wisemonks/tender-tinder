@@ -3,30 +3,29 @@ class ProcurementsController < ApplicationController
   before_action :set_procurement, only: [ :show, :toggle_starred ]
 
   def index
-    if params[:query].present?
-      # Search returns array, not relation, so no pagination
-      search_service = ProcurementSearchService.new(query: params[:query], limit: 100)
-      @procurements = search_service.search
-      @pagy = nil
+    base_query = params[:starred].present? ? current_user.starred_procurements.recent : current_user.filtered_procurements.recent
 
-      # For search results, show count of search results
-      @total_count = @procurements.length
-      @starred_count = @procurements.count { |p| p.is_starred? }
+    listing_query = if params[:query].present?
+      ProcurementSearchService.new(query: params[:query], scope: base_query).search.recent
     else
-      # Use pagination for list views
-      base_query = params[:starred].present? ? Procurement.starred.recent : Procurement.recent
-      @pagy, @procurements = pagy(base_query, limit: 20)
+      base_query
+    end
 
-      # For regular views, show total counts
-      @total_count = Procurement.count
-      @starred_count = Procurement.starred.count
+    @pagy, @procurements = pagy(listing_query.includes(:procurement_stars), limit: 20)
+
+    if params[:query].present?
+      @total_count = @pagy.count
+      @starred_count = listing_query.joins(:procurement_stars).where(procurement_stars: { user_id: current_user.id }).distinct.count
+    else
+      @total_count = current_user.filtered_procurements.count
+      @starred_count = current_user.starred_procurements.count
     end
 
     respond_to do |format|
       format.html
-      format.json {
+      format.json do
         render json: {
-          procurements: @procurements.map { |p| procurement_json(p) },
+          procurements: @procurements.map { |procurement| procurement_json(procurement) },
           pagy: @pagy ? {
             count: @pagy.count,
             page: @pagy.page,
@@ -37,7 +36,7 @@ class ProcurementsController < ApplicationController
           } : nil,
           has_more: @pagy ? @pagy.next.present? : false
         }
-      }
+      end
     end
   end
 
@@ -45,18 +44,25 @@ class ProcurementsController < ApplicationController
   end
 
   def toggle_starred
-    @procurement.toggle_starred!
+    @procurement.toggle_starred_for!(current_user)
 
     respond_to do |format|
       format.turbo_stream
-      format.html { redirect_to @procurement, notice: "Procurement #{@procurement.is_starred? ? 'starred' : 'unstarred'}" }
+      format.json { render json: { id: @procurement.id, is_starred: @procurement.starred_by?(current_user) } }
+      format.html { redirect_to @procurement, notice: "Procurement #{@procurement.starred_by?(current_user) ? 'starred' : 'unstarred'}" }
     end
   end
 
   private
 
   def set_procurement
-    @procurement = Procurement.find(params[:id])
+    @procurement = accessible_procurements.find(params[:id])
+  end
+
+  def accessible_procurements
+    Procurement.where(id: current_user.filtered_procurements.select(:id))
+      .or(Procurement.where(id: current_user.starred_procurements.select(:id)))
+      .distinct
   end
 
   def procurement_json(procurement)
@@ -70,7 +76,7 @@ class ProcurementsController < ApplicationController
       status: procurement.status,
       estimated_value: procurement.estimated_value,
       description: procurement.description,
-      is_starred: procurement.is_starred?,
+      is_starred: procurement.starred_by?(current_user),
       url: procurement_path(procurement),
       toggle_starred_url: toggle_starred_procurement_path(procurement)
     }

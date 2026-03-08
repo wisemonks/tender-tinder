@@ -1,0 +1,20 @@
+<%= render "devise/shared/auth_shell",
+  title: "Atkurkite slaptažodį",
+  subtitle: "Įveskite savo el. pašto adresą, o mes atsiųsime nuorodą naujam slaptažodžiui susikurti.",
+  eyebrow: "Slaptažodžio atkūrimas" do %>
+
+  <%= form_for(resource, as: resource_name, url: password_path(resource_name), html: { method: :post, class: "space-y-5" }) do |f| %>
+    <div>
+      <%= f.label :email, "El. paštas", class: "block text-sm font-medium text-gray-700 mb-2" %>
+      <%= f.email_field :email, autofocus: true, autocomplete: "email", class: "w-full px-4 py-3 rounded-xl border border-gray-300 bg-white text-gray-900 placeholder:text-gray-400 focus:border-red-400 focus:ring-4 focus:ring-red-100 outline-none transition-shadow", placeholder: "jusu@imone.lt" %>
+    </div>
+
+    <div class="rounded-2xl border border-orange-100 bg-orange-50 px-4 py-3 text-sm text-gray-700 leading-6">
+      Gavę laišką, atsidarykite jame esančią nuorodą ir susikurkite naują slaptažodį.
+    </div>
+
+    <%= f.submit "Siųsti atkūrimo nuorodą", class: "w-full inline-flex justify-center items-center gap-2 px-6 py-3.5 rounded-xl bg-gradient-to-r from-orange-500 via-red-500 to-pink-500 text-white font-semibold shadow-lg shadow-red-200 hover:from-orange-600 hover:via-red-600 hover:to-pink-600 transition-all" %>
+  <% end %>
+
+  <%= render "devise/shared/links" %>
+<% end %>

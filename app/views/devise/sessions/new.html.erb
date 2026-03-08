@@ -1,0 +1,36 @@
+<%= render "devise/shared/auth_shell",
+  title: "Prisijunkite prie savo paskyros",
+  subtitle: "Matykite jums aktualius pirkimus, išsisaugokite svarbiausius ir valdykite savo paieškos nustatymus.",
+  eyebrow: "Prisijungimas" do %>
+
+  <%= form_for(resource, as: resource_name, url: session_path(resource_name), html: { class: "space-y-5" }) do |f| %>
+    <div>
+      <%= f.label :email, "El. paštas", class: "block text-sm font-medium text-gray-700 mb-2" %>
+      <%= f.email_field :email, autofocus: true, autocomplete: "email", class: "w-full px-4 py-3 rounded-xl border border-gray-300 bg-white text-gray-900 placeholder:text-gray-400 focus:border-red-400 focus:ring-4 focus:ring-red-100 outline-none transition-shadow", placeholder: "jusu@imone.lt" %>
+    </div>
+
+    <div>
+      <div class="flex items-center justify-between gap-3 mb-2">
+        <%= f.label :password, "Slaptažodis", class: "block text-sm font-medium text-gray-700" %>
+        <% if devise_mapping.recoverable? %>
+          <%= link_to "Pamiršote?", new_password_path(resource_name), class: "text-sm font-medium text-red-600 hover:text-red-700" %>
+        <% end %>
+      </div>
+      <div data-controller="password-visibility" class="relative">
+        <%= f.password_field :password, autocomplete: "current-password", class: "w-full px-4 py-3 pr-14 rounded-xl border border-gray-300 bg-white text-gray-900 placeholder:text-gray-400 focus:border-red-400 focus:ring-4 focus:ring-red-100 outline-none transition-shadow", placeholder: "••••••••••", data: { password_visibility_target: "input" } %>
+        <%= render "devise/shared/password_toggle_button" %>
+      </div>
+    </div>
+
+    <% if devise_mapping.rememberable? %>
+      <label class="inline-flex items-center gap-3 rounded-xl border border-gray-200 bg-gray-50 px-4 py-3 cursor-pointer select-none">
+        <%= f.check_box :remember_me, class: "h-4 w-4 rounded border-gray-300 text-red-600 focus:ring-red-500" %>
+        <span class="text-sm text-gray-700">Prisiminti mane šiame įrenginyje</span>
+      </label>
+    <% end %>
+
+    <%= f.submit "Prisijungti", class: "w-full inline-flex justify-center items-center gap-2 px-6 py-3.5 rounded-xl bg-gradient-to-r from-orange-500 via-red-500 to-pink-500 text-white font-semibold shadow-lg shadow-red-200 hover:from-orange-600 hover:via-red-600 hover:to-pink-600 transition-all" %>
+  <% end %>
+
+  <%= render "devise/shared/links" %>
+<% end %>

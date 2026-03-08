@@ -1,8 +1,8 @@
 namespace :scraper do
   desc "Debug the scraper by checking HTML structure (without settings)"
   task debug: :environment do
-    require 'faraday'
-    require 'nokogiri'
+    require "faraday"
+    require "nokogiri"
 
     puts "🔍 Debugging scraper..."
     puts "=" * 50
@@ -70,75 +70,60 @@ namespace :scraper do
     puts "\n" + "=" * 50
   end
 
-  desc "Test scraper with current ScraperSettings and show first page results"
+  desc "Show what the current user filters would match locally"
   task test_settings: :environment do
-    puts "🔥 Testing Scraper with Current Settings"
+    puts "🔥 Testing Local Procurement Filters"
     puts "=" * 80
 
-    # Show current settings
-    puts "\n⚙️  Current ScraperSettings:"
-    puts "-" * 80
-    settings = ScraperSetting.as_hash
+    user = User.first
 
-    if settings.empty?
-      puts "⚠️  No settings found! Run: rails runner 'ScraperSetting.initialize_defaults'"
+    if user.nil?
+      puts "⚠️  Nerastas nė vienas vartotojas."
       puts "\n" + "=" * 80
       exit
     end
 
+    puts "\n⚙️  Dabartiniai vartotojo nustatymai:"
+    puts "-" * 80
+    settings = ScraperSetting.as_hash(user: user)
+
     settings.each do |key, value|
-      setting_record = ScraperSetting.find_by(key: key)
+      setting_record = user.scraper_settings.find_by(key: key)
       display_value = value.present? ? value : "(empty)"
       description = setting_record&.description || key
       puts "  #{description.ljust(40)} = #{display_value}"
     end
 
-    # Fetch and parse first page with settings
-    puts "\n🌐 Fetching first page with these settings..."
+    puts "\n🗂️  Tikriname, ką parodytų lokalūs filtrai..."
     puts "-" * 80
 
-    service = Scrapers::PublicProcurementService.new
-    response = service.send(:fetch_list_page, 1)
+    results = user.filtered_procurements.recent
 
-    unless response.success?
-      puts "❌ Failed to fetch page (Status: #{response.status})"
-      puts "\n" + "=" * 80
-      exit
-    end
+    puts "✅ Lokalūs filtrai atrinko #{results.count} procurement(s)"
 
-    doc = Nokogiri::HTML(response.body)
-    rows = service.send(:parse_list_rows, doc)
-
-    puts "✅ Successfully fetched and parsed page"
-    puts "📊 Found #{rows.count} procurement(s) matching your settings\n"
-
-    if rows.empty?
-      puts "⚠️  No results found with current settings."
-      puts "Try adjusting your ScraperSettings to get more results."
+    if results.none?
+      puts "⚠️  Nėra pirkimų, atitinkančių dabartines taisykles."
+      puts "Pabandykite praplėsti filtrus arba pakeisti raktažodžius."
     else
-      puts "\n📋 First #{[rows.count, 5].min} result(s):"
+      puts "\n📋 Pirmi #{[ results.count, 5 ].min} rezultatai:"
       puts "=" * 80
 
-      rows.first(5).each_with_index do |row, idx|
-        puts "\n#{idx + 1}. #{row[:title]}"
-        puts "   ID: #{row[:external_id]}"
-        puts "   Authority: #{row[:authority_name]}"
-        puts "   Status: #{row[:status]}"
-        puts "   Publication: #{row[:publication_date]}"
-        puts "   Deadline: #{row[:deadline_date]}"
+      results.limit(5).each_with_index do |procurement, idx|
+        puts "\n#{idx + 1}. #{procurement.title}"
+        puts "   ID: #{procurement.external_id}"
+        puts "   Authority: #{procurement.authority_name}"
+        puts "   Status: #{procurement.status}"
+        puts "   Publication: #{procurement.publication_date}"
+        puts "   Deadline: #{procurement.deadline_date}"
       end
 
-      if rows.count > 5
-        puts "\n... and #{rows.count - 5} more result(s)"
+      if results.count > 5
+        puts "\n... ir dar #{results.count - 5} rezultatai(-ų)"
       end
     end
 
-    # Save full HTML for inspection
-    File.write("tmp/debug_with_settings.html", response.body)
-    puts "\n💾 Full HTML saved to: tmp/debug_with_settings.html"
-
     puts "\n" + "=" * 80
-    puts "✅ Done! This is what ScrapeListJob will scrape with your current settings."
+    puts "✅ Done! Tai yra tai, ką matys vartotojas pagal savo taisykles."
     puts "=" * 80
   end
 end

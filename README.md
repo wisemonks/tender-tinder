@@ -8,7 +8,7 @@
 
 A modern Rails 8.1 application for scraping, storing, and searching Lithuanian public procurement data from [viesiejipirkimai.lt](https://viesiejipirkimai.lt).
 
-[![Rails](https://img.shields.io/badge/Rails-8.1.1-red.svg)](https://rubyonrails.org/)
+[![Rails](https://img.shields.io/badge/Rails-8.1.2-red.svg)](https://rubyonrails.org/)
 [![Ruby](https://img.shields.io/badge/Ruby-3.4+-red.svg)](https://www.ruby-lang.org/)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 [![Deployed with Kamal](https://img.shields.io/badge/Deployed%20with-Kamal-blue.svg)](https://kamal-deploy.org/)
@@ -24,6 +24,7 @@ A modern Rails 8.1 application for scraping, storing, and searching Lithuanian p
 - 🔍 **Full-Text Search** - Powerful PostgreSQL-based search with trigram matching
 - 🤖 **Automated Scraping** - Daily procurement data collection from viesiejipirkimai.lt
 - ⭐ **Starred Procurements** - Mark and organize interesting tenders
+- 🔐 **User Authentication** - Secure sign up, sign in, and session management with Devise
 - 📧 **Email Digest** - Daily notifications for new procurement opportunities
 - 🎨 **Modern UI** - Beautiful TailwindCSS interface with real-time updates via Turbo
 - 🚀 **Background Jobs** - Efficient processing with Solid Queue
@@ -31,7 +32,7 @@ A modern Rails 8.1 application for scraping, storing, and searching Lithuanian p
 
 ## 🏗️ Tech Stack
 
-- **Framework**: Rails 8.1.1
+- **Framework**: Rails 8.1.2
 - **Database**: PostgreSQL with pg_trgm extension
 - **Background Jobs**: Solid Queue (database-backed)
 - **Frontend**: TailwindCSS + Turbo + Stimulus
@@ -78,7 +79,7 @@ A modern Rails 8.1 application for scraping, storing, and searching Lithuanian p
 
 5. **Visit the application**
 
-   Open [http://localhost:3000](http://localhost:3000)
+   Open [http://localhost:3000](http://localhost:3000) and sign up for an account at `/users/sign_up`.
 
 ### Run Your First Scrape
 

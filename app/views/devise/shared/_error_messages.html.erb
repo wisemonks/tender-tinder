@@ -1,0 +1,11 @@
+<% if resource&.errors&.any? %>
+  <div class="mb-6 rounded-2xl border border-red-200 bg-red-50 px-5 py-4 text-red-800 shadow-sm">
+    <p class="font-semibold">Formos išsaugoti nepavyko.</p>
+    <p class="mt-1 text-sm text-red-700">Peržiūrėkite laukus ir pabandykite dar kartą.</p>
+    <ul class="mt-3 space-y-1 text-sm list-disc list-inside">
+      <% resource.errors.full_messages.each do |message| %>
+        <li><%= message %></li>
+      <% end %>
+    </ul>
+  </div>
+<% end %>

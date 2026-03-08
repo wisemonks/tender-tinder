@@ -1,27 +1,29 @@
-# Read about fixtures at https://api.rubyonrails.org/classes/ActiveRecord/FixtureSet.html
-
 one:
-  external_id: MyString
-  title: MyText
-  authority_name: MyString
-  description: MyText
-  status: MyString
+  external_id: '1001'
+  title: Saulės elektrinės įrengimas
+  authority_name: Vilniaus miesto savivaldybė
+  description: Perkami saulės elektrinės įrengimo darbai.
+  status: Sukurta
+  contract_type: Darbai
+  procedure_type: Atviras konkursas
+  cpc_category: Techninės priežiūros ir remonto paslaugos
   publication_date: 2025-11-22 11:46:50
-  deadline_date: 2025-11-22 11:46:50
-  estimated_value: 9.99
-  url: MyString
-  raw_html: MyText
-  is_starred: false
+  deadline_date: 2025-11-29 11:46:50
+  estimated_value: 12000.50
+  url: https://example.com/procurements/1001
+  raw_html: <html>one</html>
 
 two:
-  external_id: MyString
-  title: MyText
-  authority_name: MyString
-  description: MyText
-  status: MyString
+  external_id: '1002'
+  title: IT infrastruktūros priežiūra
+  authority_name: Kauno rajono savivaldybė
+  description: Perkamos IT infrastruktūros priežiūros paslaugos ir pagalbos centro darbai.
+  status: Vertinimas
+  contract_type: Paslaugos
+  procedure_type: Atviras konkursas
+  cpc_category: Kompiuterių ir susijusios paslaugos
   publication_date: 2025-11-22 11:46:50
-  deadline_date: 2025-11-22 11:46:50
-  estimated_value: 9.99
-  url: MyString
-  raw_html: MyText
-  is_starred: false
+  deadline_date: 2025-11-30 11:46:50
+  estimated_value: 9500.00
+  url: https://example.com/procurements/1002
+  raw_html: <html>two</html>

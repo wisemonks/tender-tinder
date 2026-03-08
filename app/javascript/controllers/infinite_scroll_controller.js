@@ -9,6 +9,8 @@ export default class extends Controller {
   }
 
   connect() {
+    this.csrfToken = document.querySelector('meta[name="csrf-token"]')?.content
+
     this.observer = new IntersectionObserver(
       entries => this.handleIntersection(entries),
       {
@@ -112,10 +114,15 @@ export default class extends Controller {
                 ${this.escapeHtml(procurement.title)}
               </h3>
             </a>
-            <button class="text-2xl focus:outline-none" onclick="window.location.href='${procurement.toggle_starred_url}'">
-              <span class="inline-block transform transition-all duration-300 ease-out hover:scale-125 ${procurement.is_starred ? 'text-red-500 drop-shadow-lg' : 'text-gray-300 hover:text-orange-500'}" style="${procurement.is_starred ? 'filter: drop-shadow(0 0 8px rgba(239, 68, 68, 0.6));' : ''}">
-                ${procurement.is_starred ? '★' : '☆'}
-              </span>
+            <button
+              type="button"
+              class="text-2xl focus:outline-none"
+              data-action="click->infinite-scroll#toggleStar"
+              data-toggle-star-url="${procurement.toggle_starred_url}"
+              data-starred="${procurement.is_starred}"
+              aria-pressed="${procurement.is_starred}"
+            >
+              ${this.starIconMarkup(procurement.is_starred)}
             </button>
           </div>
 
@@ -165,6 +172,50 @@ export default class extends Controller {
     `
 
     return div
+  }
+
+  async toggleStar(event) {
+    event.preventDefault()
+
+    const button = event.currentTarget
+    if (button.disabled) return
+
+    button.disabled = true
+
+    try {
+      const response = await fetch(button.dataset.toggleStarUrl, {
+        method: 'POST',
+        headers: {
+          'Accept': 'application/json',
+          'X-CSRF-Token': this.csrfToken,
+          'X-Requested-With': 'XMLHttpRequest'
+        },
+        credentials: 'same-origin'
+      })
+
+      if (!response.ok) throw new Error('Network response was not ok')
+
+      const data = await response.json()
+      this.updateStarButton(button, data.is_starred)
+    } catch (error) {
+      console.error('Error toggling star:', error)
+    } finally {
+      button.disabled = false
+    }
+  }
+
+  updateStarButton(button, isStarred) {
+    button.dataset.starred = isStarred
+    button.setAttribute('aria-pressed', isStarred)
+    button.innerHTML = this.starIconMarkup(isStarred)
+  }
+
+  starIconMarkup(isStarred) {
+    return `
+      <span class="inline-block transform transition-all duration-300 ease-out hover:scale-125 ${isStarred ? 'text-red-500 drop-shadow-lg' : 'text-gray-300 hover:text-orange-500'}" style="${isStarred ? 'filter: drop-shadow(0 0 8px rgba(239, 68, 68, 0.6));' : ''}">
+        ${isStarred ? '★' : '☆'}
+      </span>
+    `
   }
 
   escapeHtml(text) {

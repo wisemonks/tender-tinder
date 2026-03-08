@@ -1,4 +1,5 @@
 <div class="min-h-screen bg-gray-50">
+  <% starred = procurement_starred?(@procurement) %>
   <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
     <!-- Header with Branding -->
     <div class="mb-6">
@@ -47,8 +48,8 @@
             <%= button_to toggle_starred_procurement_path(@procurement),
               method: :post,
               class: "text-4xl focus:outline-none" do %>
-              <span class="inline-block transform transition-all duration-300 ease-out hover:scale-125 <%= @procurement.is_starred? ? 'text-red-500 drop-shadow-lg' : 'text-gray-300 hover:text-orange-500' %>" style="<%= @procurement.is_starred? ? 'filter: drop-shadow(0 0 8px rgba(239, 68, 68, 0.6));' : '' %>">
-                <%= @procurement.is_starred? ? '★' : '☆' %>
+              <span class="inline-block transform transition-all duration-300 ease-out hover:scale-125 <%= starred ? 'text-red-500 drop-shadow-lg' : 'text-gray-300 hover:text-orange-500' %>" style="<%= starred ? 'filter: drop-shadow(0 0 8px rgba(239, 68, 68, 0.6));' : '' %>">
+                <%= starred ? '★' : '☆' %>
               </span>
             <% end %>
           <% end %>

@@ -35,7 +35,7 @@
         <div class="flex gap-2">
           <%= f.text_field :query,
             value: params[:query],
-            placeholder: "Ieškokite pagal pavadinimą, aprašymą, pirkimo vykdytoją arba ID...",
+            placeholder: "Ieškokite pagal pavadinimą, aprašymą, vykdytoją, būdą, BVPŽ arba ID...",
             class: "flex-1 px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-red-500 focus:border-transparent" %>
           <%= f.submit "Ieškoti",
             class: "px-6 py-3 bg-gradient-to-r from-orange-500 to-red-500 text-white rounded-lg hover:from-orange-600 hover:to-red-600 focus:ring-2 focus:ring-red-500 focus:ring-offset-2 cursor-pointer" %>
@@ -48,14 +48,14 @@
       <nav class="flex -mb-px space-x-8">
         <%= link_to procurements_path,
           class: "inline-flex items-center gap-2 px-1 py-4 text-sm font-semibold border-b-2 transition-colors #{params[:starred].blank? && params[:query].blank? ? 'border-red-500 text-red-600' : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300'}" do %>
-          <span>Visi pirkimai</span>
+          <span>Atitikę pirkimai</span>
           <span class="inline-flex items-center justify-center min-w-[2rem] px-2 py-0.5 text-xs font-bold rounded-full <%= params[:starred].blank? && params[:query].blank? ? 'bg-red-100 text-red-700' : 'bg-gray-100 text-gray-600' %>">
             <%= @total_count %>
           </span>
         <% end %>
         <%= link_to procurements_path(starred: true),
           class: "inline-flex items-center gap-2 px-1 py-4 text-sm font-semibold border-b-2 transition-colors #{params[:starred].present? ? 'border-red-500 text-red-600' : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300'}" do %>
-          <span>Tik pažymėti ★</span>
+          <span>Pažymėti ★</span>
           <span class="inline-flex items-center justify-center min-w-[2rem] px-2 py-0.5 text-xs font-bold rounded-full <%= params[:starred].present? ? 'bg-red-100 text-red-700' : 'bg-gray-100 text-gray-600' %>">
             <%= @starred_count %>
           </span>
@@ -66,7 +66,10 @@
     <!-- Results Count -->
     <% if params[:query].present? %>
       <div class="mb-4 text-gray-600">
-        Rasta <span class="font-semibold text-red-600"><%= @procurements.is_a?(Array) ? @procurements.length : @procurements.count %></span> <%= (@procurements.is_a?(Array) ? @procurements.length : @procurements.count) == 1 ? 'rezultatas' : 'rezultatai' %> pagal "<%= params[:query] %>"
+        Rasta <span class="font-semibold text-red-600"><%= @pagy.count %></span>
+        <%= @pagy.count == 1 ? 'rezultatas' : 'rezultatai' %>
+        <%= params[:starred].present? ? 'tarp pažymėtų' : 'tarp jūsų atrinktų pirkimų' %>
+        pagal "<%= params[:query] %>"
       </div>
     <% end %>
 
@@ -75,8 +78,8 @@
       <div
         data-controller="infinite-scroll"
         data-infinite-scroll-url-value="<%= procurements_path %>"
-        data-infinite-scroll-page-value="<%= @pagy ? @pagy.page : 1 %>"
-        data-infinite-scroll-has-more-value="<%= @pagy ? @pagy.next.present? : false %>"
+        data-infinite-scroll-page-value="<%= @pagy.page %>"
+        data-infinite-scroll-has-more-value="<%= @pagy.next.present? %>"
       >
         <div class="space-y-4" data-infinite-scroll-target="container">
           <% @procurements.each do |procurement| %>
@@ -104,9 +107,13 @@
       </div>
     <% else %>
       <div class="bg-white rounded-lg shadow-sm border border-gray-200 p-12 text-center">
-        <p class="text-gray-500 text-lg">No procurements found.</p>
+        <p class="text-gray-500 text-lg">
+          <%= params[:starred].present? ? 'Dar neturite pažymėtų pirkimų.' : 'Kol kas neturite jūsų taisykles atitinkančių pirkimų.' %>
+        </p>
         <% if params[:query].present? %>
-          <p class="text-gray-400 mt-2">Try a different search term.</p>
+          <p class="text-gray-400 mt-2">Pabandykite kitą paieškos frazę.</p>
+        <% elsif params[:starred].blank? %>
+          <p class="text-gray-400 mt-2">Paleiskite scrapingą arba palaukite kito suplanuoto atnaujinimo.</p>
         <% end %>
       </div>
     <% end %>

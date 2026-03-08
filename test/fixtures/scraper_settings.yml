@@ -1,13 +1,20 @@
-# Read about fixtures at https://api.rubyonrails.org/classes/ActiveRecord/FixtureSet.html
+keywords:
+  user: one
+  key: keywords
+  value: ""
+  description: Raktažodžiai, pagal kuriuos atrenkami pirkimai
+  setting_type: text
 
-one:
-  key: MyString
-  value: MyText
-  description: MyString
-  setting_type: MyString
+status:
+  user: one
+  key: status
+  value: ""
+  description: Pirkimo būsena
+  setting_type: select
 
-two:
-  key: MyString
-  value: MyText
-  description: MyString
-  setting_type: MyString
+digest:
+  user: one
+  key: digest_emails
+  value: alerts@example.com
+  description: El. pašto adresai kasdienei santraukai
+  setting_type: text

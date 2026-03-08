@@ -1,21 +1,21 @@
 class ProcurementSearchService
-  attr_reader :query, :limit
+  attr_reader :query, :scope
 
-  def initialize(query:, limit: 20)
+  def initialize(query:, scope: Procurement.all)
     @query = query
-    @limit = limit
+    @scope = scope
   end
 
   def search
-    return Procurement.none if query.blank?
+    return scope.none if query.blank?
 
     # If query looks like an ID, prioritize exact match
     if query.match?(/^\d+$/)
-      exact_match = Procurement.where(external_id: query).limit(1)
+      exact_match = scope.where(external_id: query).limit(1)
       return exact_match if exact_match.exists?
     end
 
     # Perform keyword search using pg_search
-    Procurement.search_by_text(query).limit(limit)
+    scope.where(id: Procurement.search_by_text(query).select(:id))
   end
 end
